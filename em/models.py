@@ -3,10 +3,34 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Club(models.Model):
+    CATEGORY_CHOICES = [
+        ('才藝', '才藝性社團'),
+        ('體育', '體育性社團'),
+        ('育樂', '育樂性社團'),
+        ('學術類自然', '學術類自然社團'),
+        ('學術類社會', '學術類社會社團'),
+    ]
+    category = models.CharField(
+        '社團屬性', 
+        max_length=10, 
+        choices=CATEGORY_CHOICES, 
+        default='才藝'            
+    )
     clubname = models.CharField('社團名稱', max_length=10)
     leadername = models.CharField('社長名稱', max_length=5)
     teachername = models.CharField('社師名稱', max_length=5)
-    
+    memberaccount = models.CharField('社團名額', max_length=3, default='40')
+    @property
+    def current_vacancy(self):
+        try:
+            total = int(self.memberaccount)
+        except ValueError:
+            total = 0
+            
+        accepted_count = self.apply_set.filter(status=1).count()
+        
+        vacancy = total - accepted_count
+        return vacancy if vacancy > 0 else 0
     def __str__(self):
         return self.clubname
 
