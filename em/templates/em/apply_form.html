@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>填寫轉社申請單</title>
+</head>
+<body>
+    <h2>📝 填寫轉社申請單 (第一階段：申請轉出)</h2>
+    <hr>
+
+    <form method="POST" action="">
+        {% csrf_token %} {{ form.as_p }}
+
+        <br>
+        <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+            送出轉出申請
+        </button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>轉社申請紀錄清單</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h2>📋 大直高中 - 學生轉社申請紀錄</h2>
+    <hr>
+    
+    <a href="{% url 'apply_create' %}" style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+        ➕ 填寫新申請表
+    </a>
+
+    <table>
+    <thead>
+        <tr>
+            <th>學號</th>
+            <th>想去的社團</th>
+            <th>申請原因</th>
+            <th>審核狀態</th>
+            <th>審核操作（功能演示）</th> </tr>
+    </thead>
+    <tbody>
+        {% for apply in applies %}
+        <tr>
+            <td>{{ apply.student_id }}</td>
+            <td>{{ apply.from_club }}</td>
+            <td>{{ apply.out_reason }}</td>
+            <td>
+                {% if apply.status == 0 %}等待原社社長審核
+                {% elif apply.status == 1 %}原社社長拒絕
+                {% elif apply.status == 2 %}等待原社社師審核
+                {% elif apply.status == 3 %}原社社師拒絕
+                {% elif apply.status == 4 %}允許轉出
+                {% elif apply.status == 5 %}請填寫欲轉入社團資料
+                {% elif apply.status == 6 %}等待新社社長審核
+                {% elif apply.status == 7 %}新社社長拒絕
+                {% elif apply.status == 8 %}等待新社社師審核
+                {% elif apply.status == 9 %}新社社師拒絕
+                {% elif apply.status == 10 %}等待組長審核
+                {% elif apply.status == 11 %}組長拒絕
+                {% elif apply.status == 12 %}申請成功
+                {% endif %}
+            </td>
+            <td>
+                {% if apply.status == 0 %}
+                    <a href="{% url 'review_apply' apply.id 2 %}" style="margin-right: 5px;">[原社長同意]</a>
+                    <a href="{% url 'review_apply' apply.id 1 %}">[原社長拒絕]</a>
+                {% elif apply.status == 2 %}
+                    <a href="{% url 'review_apply' apply.id 5 %}" style="margin-right: 5px;">[原社師同意]</a>
+                    <a href="{% url 'review_apply' apply.id 3 %}">[原社師拒絕]</a>
+                {% else %}
+                    <span style="color: gray;">無可用操作</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" style="text-align: center;">目前還沒有任何申請紀錄喔！</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

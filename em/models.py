@@ -36,14 +36,29 @@ class Club(models.Model):
 
 
 class Apply(models.Model):
-    STATUS_CHOICE = [(0, '待審核'), (1, '同意'), (2, '拒絕')]
-    
-    applicant = models.CharField('申請者', max_length=5)
+    STATUS_CHOICES = [
+        (0, '第一關：等待原社社長審核'),
+        (1, '第一關失敗：原社社長拒絕'), 
+        (2, '第二關：等待原社社師審核'),
+        (3, '第二關失敗：原社社師拒絕'), 
+        (4, '申請成功：允許轉出'),
+        (5, '第三關：選取欲轉入社團並填寫資料'),
+        (6, '第四關：等待新社社長審核'),
+        (7, '第四關失敗：新社社長拒絕'),
+        (8, '第五關：等待新社社師審核'),
+        (9, '第五關失敗：新社社師拒絕'), 
+        (10, '第六關：等待組長審核'),
+        (11, '第六關失敗：組長拒絕'), 
+        (12, '第六關成功：申請成功'),
+    ]
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='申請者')
     student_id = models.CharField('學號', max_length=20)
-    targetclub = models.ForeignKey(Club, on_delete=models.CASCADE, verbose_name='想轉入的社團')
-    reason = models.TextField('轉社原因', blank=True)
-    status = models.IntegerField('申請狀態', choices=STATUS_CHOICE, default=0)
-
-    def __str__(self):
-       return f"{self.applicant} 的申請單"
-
+    from_club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='out_applies', verbose_name='原社團',null=True, blank=True)
+    target_club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name='in_applies', verbose_name='想轉入的社團', null=True, blank=True)
+    out_reason = models.TextField('轉出原因', null=True, blank=True)
+    in_reason = models.TextField('轉入原因', null=True, blank=True)
+    status = models.IntegerField('申請狀態', choices=STATUS_CHOICES, default=0)
+def __str__(self):
+        if self.applicant:
+            return f"[{self.student_id}] {self.applicant.last_name}{self.applicant.first_name} 的轉社申請"
+        return f"[{self.student_id}] 訪客 的轉社申請"

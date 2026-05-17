@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>臺北市立大直高中 - 學生轉社管理系統</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #f7931e 0%, #f15a24 100%);
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .welcome-box {
+            background-color: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { color: #d9534f; margin-bottom: 5px; font-size: 28px; }
+        .subtitle { color: #666; margin-bottom: 40px; font-size: 16px; }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .btn {
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        /* 學生按鈕：藍色調 */
+        .btn-student { background-color: #3498db; }
+        .btn-student:hover { background-color: #2980b9; transform: translateY(-2px); }
+        /* 老師按鈕：綠色調 */
+        .btn-teacher { background-color: #2ecc71; }
+        .btn-teacher:hover { background-color: #27ae60; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="welcome-box">
+    <h1>臺北市立大直高級中學</h1>
+    <div class="subtitle">e-Course 3.0 學生轉社線上申請系統</div>
+    
+    <div class="btn-container">
+        <a href="{% url 'apply_create' %}" class="btn btn-student">
+            👨‍🎓 我是學生 (填寫轉社申請)
+        </a>
+        
+        <a href="{% url 'apply_list' %}" class="btn btn-teacher">
+            👩‍🏫 我是教職員/社長 (審核與管理)
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
