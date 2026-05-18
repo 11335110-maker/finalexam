@@ -8,7 +8,7 @@ urlpatterns = [
     path('club/', views.ClubList.as_view(), name='club_list'), 
     path('apply/create/', views.ApplyCreate.as_view(), name='apply_create'),
     path('apply/student/', views.StudentApplyList.as_view(), name='student_list'),
-# 🌟 把它改成這樣（注意看 views. 後面的名字！）：
+    # 🌟 把它改成這樣（注意看 views. 後面的名字！）：
     path('apply/teacher/', views.TeacherApplyList.as_view(), name='teacher_list'),
    # 老師手動修改狀態表單
     path('apply/<int:pk>/edit/', views.ApplyUpdate.as_view(), name='apply_edit'),
