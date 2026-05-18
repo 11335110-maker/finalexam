@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>第五關：選擇欲轉入的新社團</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center bg-primary text-white rounded-top">
+                    <h3 class="mb-1">🌟 轉社申請 - 第五關</h3>
+                    <p class="mb-0">您已成功獲得原社團轉出許可！請填寫您想加入的新社團。</p>
+                </div>
+                <div class="card-body bg-white">
+                    <p><strong>申請人帳號：</strong> {{ apply.applicant.username }}</p>
+                    <p><strong>原離去社團：</strong> <span class="badge bg-secondary fs-6">{{ apply.from_club }}</span></p>
+                    <p class="mb-0"><strong>轉出原因：</strong> {{ apply.out_reason }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4 text-secondary">請填寫轉入資訊</h4>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="target_club" class="form-label fw-bold">1. 選擇欲轉入的新社團</label>
+                            <select class="form-select form-select-lg" id="target_club" name="target_club" required>
+                                <option value="" disabled selected>-- 請選擇社團 --</option>
+                                <option value="熱舞社">熱舞社</option>
+                                <option value="吉他社">吉他社</option>
+                                <option value="熱音社">熱音社</option>
+                                <option value="籃球社">籃球社</option>
+                                <option value="滑板社">滑板社</option>
+                                <option value="資訊研究社">資訊研究社</option>
+                            </select>
+                            <div class="form-text">注意：請先確認該社團目前仍有空缺名額。</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="in_reason" class="form-label fw-bold">2. 轉入原因說明</label>
+                            <textarea class="form-control" id="in_reason" name="in_reason" rows="4" placeholder="請詳細說明您為什麼想加入這個新社團，這將會作為新社長審核的依據..." required></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary px-4 me-md-2">返回進度頁</a>
+                            <button type="submit" class="btn btn-success btn-lg px-5">確認送出，進入下一關 🚀</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

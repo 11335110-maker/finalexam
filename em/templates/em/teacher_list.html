@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>轉社申請紀錄清單</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h2>📋 大直高中 - 學生轉社申請紀錄</h2>
+    <hr>
+    
+    <a href="{% url 'student_list' %}" style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+        ➕ 填寫新申請表
+    </a>
+
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; text-align: center;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th>申請人 (班級座號姓名)</th>
+            <th>原社團 ➡️ 欲轉入社團</th>
+            <th>申請原因</th>
+            
+            {% if current_role == 'student' %}
+                <th style="color: #3498db;">目前審核狀態</th>
+            {% else %}
+                <th style="color: #2ecc71;">審核動作</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for apply in object_list %}
+        <tr>
+            <td>{{ apply.class_num }} {{ apply.seat_num }} {{ apply.name }}</td>
+            <td>{{ apply.current_club }} ➡️ {{ apply.target_club }}</td>
+            <td>{{ apply.reason }}</td>
+            
+            {% if current_role == 'student' %}
+                <td style="font-weight: bold; color: #2c3e50;">
+                    <span style="background-color: #e8f4fd; color: #2980b9; padding: 5px 10px; border-radius: 20px; font-size: 14px;">
+                        🔍 {{ apply.get_status_display }}
+                    </span>
+                </td>
+            {% else %}
+                <td>
+                    <a href="{% url 'review_apply' apply.pk 2 %}" style="background:#2ecc71; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; margin-right:5px; font-weight: bold; font-size: 14px;">
+                        👍 同意進下一關
+                    </a>
+                    <a href="{% url 'review_apply' apply.pk 12 %}" style="background:#e74c3c; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-weight: bold; font-size: 14px;">
+                        ❌ 拒絕並結案
+                    </a>
+                </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">目前沒有任何轉社申請紀錄。</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
