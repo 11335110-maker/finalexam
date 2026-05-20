@@ -1,67 +1,93 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>轉社申請紀錄清單</title>
     <style>
+        /* 基礎表格樣式設定 */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f2f2f2; }
+        /* 區塊標題的特別顏色，方便老師辨識 */
+        .section-title-out { color: #2980b9; margin-top: 40px; } /* 轉出用橘色 */
+        .section-title-in { color: #2980b9; margin-top: 40px; }  /* 轉入用藍色 */
     </style>
 </head>
 <body>
 
-    <h2>📋 大直高中 - 學生轉社申請紀錄</h2>
+    <h2>📋 大直高中 - 學生轉社申請紀錄（管理端）</h2>
     <hr>
     
-    <a href="{% url 'student_list' %}" style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
-        ➕ 填寫新申請表
-    </a>
-
+   <a href="/" style="padding: 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+    🔙 返回首頁
+</a>
+    <h3 class="section-title-out">📋 第二階段：原社團轉出審核</h3>
     <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; text-align: center;">
-    <thead>
-        <tr style="background-color: #f2f2f2;">
-            <th>申請人 (班級座號姓名)</th>
-            <th>原社團 ➡️ 欲轉入社團</th>
-            <th>申請原因</th>
-            
-            {% if current_role == 'student' %}
-                <th style="color: #3498db;">目前審核狀態</th>
-            {% else %}
-                <th style="color: #2ecc71;">審核動作</th>
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for apply in object_list %}
-        <tr>
-            <td>{{ apply.class_num }} {{ apply.seat_num }} {{ apply.name }}</td>
-            <td>{{ apply.current_club }} ➡️ {{ apply.target_club }}</td>
-            <td>{{ apply.reason }}</td>
-            
-            {% if current_role == 'student' %}
-                <td style="font-weight: bold; color: #2c3e50;">
-                    <span style="background-color: #e8f4fd; color: #2980b9; padding: 5px 10px; border-radius: 20px; font-size: 14px;">
-                        🔍 {{ apply.get_status_display }}
-                    </span>
-                </td>
-            {% else %}
-                <td>
-                    <a href="{% url 'review_apply' apply.pk 2 %}" style="background:#2ecc71; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; margin-right:5px; font-weight: bold; font-size: 14px;">
-                        👍 同意進下一關
-                    </a>
-                    <a href="{% url 'review_apply' apply.pk 12 %}" style="background:#e74c3c; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-weight: bold; font-size: 14px;">
-                        ❌ 拒絕並結案
-                    </a>
-                </td>
-            {% endif %}
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">目前沒有任何轉社申請紀錄。</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <thead>
+            <tr style="background-color: #f9ebea;"> <th>申請人 (學號/姓名)</th>
+                <th>原社團 </th>
+                <th>轉出申請原因</th>
+                <th style="color: #2980b9;">審核核准</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for apply in object_list %}
+                {% if apply.status == 0 %}
+                <tr>
+                    <td>{{ apply.student_id }} {{ apply.applicant.username }}</td>
+                   <td><span class="badge bg-secondary" style="background-color: #7f8c8d; color: white; padding: 5px 10px; border-radius: 4px;">{{ apply.from_club }}</span></td>
+                    <td>{{ apply.out_reason }}</td>
+                    <td>
+                        <a href="{% url 'review_apply' apply.pk 5 %}" style="background:#2ecc71; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; margin-right:5px; font-weight: bold; font-size: 14px;">
+                            👍 准許轉出
+                        </a>
+                        <a href="{% url 'review_apply' apply.pk 12 %}" style="background:#e74c3c; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-weight: bold; font-size: 14px;">
+                            ❌ 不通過
+                        </a>
+                    </td>
+                </tr>
+                {% endif %}
+            {% empty %}
+                <tr>
+                    <td colspan="4">目前沒有任何待處理的轉出申請。</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <h3 class="section-title-in">🎯 第四階段：新社團轉入審核</h3>
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%; text-align: center;">
+        <thead>
+            <tr style="background-color: #eaf2f8;"> <th>申請人 (班級座號姓名)</th>
+                <th>原社團 ➡️ 欲轉入社團</th>
+                <th>轉入原因說明</th>
+                <th style="color: #2980b9;">審核動作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for apply in object_list %}
+                {% if apply.status == 6 %}
+                <tr>
+                    <td>{{ apply.student_id }} {{ apply.applicant.username }}</td>
+                    <td>{{ apply.from_club }} ➡️ <strong>{{ apply.target_club }}</strong></td>
+                    <td>{{ apply.in_reason }}</td>
+                    <td>
+                        <a href="{% url 'review_apply' apply.pk 11 %}" style="background:#3498db; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; margin-right:5px; font-weight: bold; font-size: 14px;">
+                            🎉 准許轉入(結案)
+                        </a>
+                        <a href="{% url 'review_apply' apply.pk 12 %}" style="background:#e74c3c; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-weight: bold; font-size: 14px;">
+                            ❌ 不通過
+                        </a>
+                    </td>
+                </tr>
+                {% endif %}
+            {% empty %}
+                <tr>
+                    <td colspan="4">目前沒有任何待處理的轉入申請。</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </body>
 </html>

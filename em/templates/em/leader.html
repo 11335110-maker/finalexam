@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>訓育組長控制中心</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", Arial, sans-serif; margin: 40px; background-color: #f8f9fa; }
+        .section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        h2 { color: #2c3e50; border-left: 5px solid #2c3e50; padding-left: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: center; }
+        th { background-color: #34495e; color: white; }
+        .btn { padding: 8px 16px; text-decoration: none; border-radius: 6px; font-weight: bold; color: white; display: inline-block; cursor: pointer; border: none; }
+        .btn-green { background-color: #27ae60; }
+        .btn-red { background-color: #e74c3c; }
+        .btn-blue { background-color: #3498db; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>👑 大直高中轉社系統 - 訓育組長管理後台</h1>
+    <hr>
+
+    <div class="section">
+        <h2>📧 本屆各社團審核帳號登記 (身分聯動區)</h2>
+        <p style="color: #666;">※ 此區登記之 Email 將直接決定「教師審核頁面」能看到哪些社團的單子。</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>社團名稱</th>
+                    <th>社長電子郵件 (dcsh.tp.edu.tw)</th>
+                    <th>指導老師電子郵件 (dcsh.tp.edu.tw)</th>
+                    <th>快速模擬測試 (模擬登入該身分)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>熱舞社</strong></td>
+                    <td>club_leader_out@dcsh.tp.edu.tw</td>
+                    <td>club_teacher_out@dcsh.tp.edu.tw</td>
+                    <td>
+                        <a href="{% url 'teacher_list' %}?mock_user=club_teacher_out@dcsh.tp.edu.tw" class="btn btn-blue">模擬老師身分</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>吉他社</strong></td>
+                    <td>club_leader_in@dcsh.tp.edu.tw</td>
+                    <td>club_teacher_in@dcsh.tp.edu.tw</td>
+                    <td>
+                        <a href="{% url 'teacher_list' %}?mock_user=club_teacher_in@dcsh.tp.edu.tw" class="btn btn-blue">模擬老師身分</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📊 全校轉社進度監控與最後核定</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>申請人</th>
+                    <th>轉出 ➡️ 轉入</th>
+                    <th>目前進度</th>
+                    <th>組長終極核定</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for apply in object_list %}
+                <tr>
+                    <td>{{ apply.student_id }} {{ apply.applicant.username }}</td>
+                    <td>{{ apply.from_club }} ➡️ {{ apply.target_club|default:"未選" }}</td>
+                    <td>
+                        {% if apply.status == 0 %}<span class="status-badge" style="background: #eee;">原社審核中</span>
+                        {% elif apply.status == 5 %}<span class="status-badge" style="background: #d1ecf1; color:#0c5460;">學生填志願中</span>
+                        {% elif apply.status == 6 %}<span class="status-badge" style="background: #fff3cd; color:#856404;">新社審核中</span>
+                        {% elif apply.status == 7 %}<span class="status-badge" style="background: #f8d7da; color:#721c24;">🎯 待組長終審</span>
+                        {% elif apply.status == 11 %}<span class="status-badge" style="background: #d4edda; color:#155724;">✅ 轉社成功</span>
+                        {% elif apply.status == 12 %}<span class="status-badge" style="background: #f8d7da; color:#721c24;">❌ 駁回</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if apply.status == 7 %}
+                            <a href="{% url 'review_apply' apply.pk 11 %}" class="btn btn-green">👑 核准結案</a>
+                            <a href="{% url 'review_apply' apply.pk 12 %}" class="btn btn-red">駁回</a>
+                        {% elif apply.status < 7 %}
+                            <span style="color: #999; font-size: 12px;">(尚未到達終審階段)</span>
+                        {% else %}
+                            <span style="color: #999; font-size: 12px;">- 已結案 -</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{% url 'home' %}" style="color: #666; text-decoration: none;">🔙 返回系統首頁</a>
+
+</body>
+</html>

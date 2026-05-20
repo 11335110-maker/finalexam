@@ -43,4 +43,24 @@
     <a href="{% url 'home' %}" style="color: #34495e; text-decoration: none; font-weight: bold;">⬅️ 返回首頁</a>
 
 </body>
+<td>
+    {% if apply.status == 0 %}
+        <a href="{% url 'review_apply' apply.pk 5 %}" class="btn-success">👍 同意轉出</a>
+        <a href="{% url 'review_apply' apply.pk 12 %}" class="btn-danger">❌ 不通過</a>
+
+    {% elif apply.status == 5 %}
+        <span style="color: #f39c12; font-weight: bold;">⏳ 等待學生填選新社團</span>
+
+    {% elif apply.status == 6 %}
+        <a href="{% url 'review_apply' apply.pk 11 %}" class="btn-primary">🎉 准許轉入(結案)</a>
+        <a href="{% url 'review_apply' apply.pk 12 %}" class="btn-danger">❌ 不通過</a>
+
+    {% elif apply.status == 11 %}
+        <span style="color: #27ae60; font-weight: bold;">✅ 轉社成功（已結案）</span>
+
+    {% elif apply.status == 12 %}
+        <span style="color: #c0392b; font-weight: bold;">❌ 審核不通過（已結案）</span>
+        
+    {% endif %}
+</td>
 </html>

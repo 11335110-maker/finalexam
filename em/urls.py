@@ -16,4 +16,5 @@ urlpatterns = [
     path('apply/<int:pk>/out_success/', views.out_suecces, name='out_success'),
     #老師快捷一鍵改狀態的通道
     path('apply/<int:pk>/review/<int:temp_status>/', views.review_apply, name='review_apply'),
+    path('apply/leader/', views.leader, name='leader'),
 ]
