@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>轉社申請單詳細進度</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa;">
+
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0;">📋 轉社申請單詳細進度</h2>
+        
+        <div style="background-color: #f1f2f6; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+            <p style="margin: 5px 0;"><strong>申請學生：</strong> {{ apply.applicant.username }}</p>
+            <p style="margin: 5px 0;"><strong>學號：</strong> {{ apply.student_id }}</p>
+            <p style="margin: 5px 0;"><strong>原本社團：</strong> {{ apply.from_club }}</p>
+            <p style="margin: 5px 0;"><strong>轉出原因：</strong> {{ apply.out_reason }}</p>
+            {% if apply.target_club %}
+                <p style="margin: 5px 0;"><strong>欲轉入社團：</strong> <span style="color: #27ae60; font-weight: bold;">{{ apply.target_club }}</span></p>
+            {% endif %}
+        </div>
+
+        {% if apply.chief_approved == False or apply.teacher_approved == False or apply.new_chief_approved == False or apply.new_teacher_approved == False or apply.leader_approved == False %}
+            
+            <div style="background-color: #f8d7da; color: #721c24; padding: 20px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(231,76,60,0.1);">
+                ❌ 轉社申請失敗！有審核關卡未通過，請重新填單申請。
+            </div>
+
+        {% else %}
+            
+            <h3 style="color: #34495e;">🚦 第一階段：原社團放行進度</h3>
+            <hr>
+
+            <div style="padding: 12px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 15px;">👑 原社團社長審核：</span>
+                {% if apply.chief_approved == True %}
+                    <span style="color: #27ae60; font-weight: bold;">✅ 通過</span>
+                {% else %}
+                    <span style="color: #e67e22; font-weight: bold;">⏳ 審核中</span>
+                {% endif %}
+            </div>
+
+            <div style="padding: 12px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 15px;">👩‍🏫 原社團指導老師審核：</span>
+                {% if apply.teacher_approved == True %}
+                    <span style="color: #27ae60; font-weight: bold;">✅ 通過</span>
+                {% elif apply.chief_approved == True %}
+                    <span style="color: #e67e22; font-weight: bold;">⏳ 審核中</span>
+                {% else %}
+                    <span style="color: #95a5a6;">🔒 等待社長先放行</span>
+                {% endif %}
+            </div>
+
+
+            {% if apply.chief_approved == True and apply.teacher_approved == True and not apply.target_club %}
+                <div style="margin-top: 30px; background-color: #e3f2fd; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #90caf9;">
+                    <p style="color: #0d47a1; font-weight: bold; margin-top: 0;">🎉 恭喜！原社團已成功放行！</p>
+                    <a href="{% url 'out_suecces' apply.pk %}" style="display: inline-block; background-color: #e67e22; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(230,126,34,0.3);">
+                        👉 填寫欲轉入社團資料
+                    </a>
+                </div>
+            {% endif %}
+
+
+            {% if apply.target_club %}
+                
+                <h3 style="color: #34495e; margin-top: 30px;">🏫 第二階段：新社團 & 學校終審進度</h3>
+                <hr>
+
+                <div style="padding: 12px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 15px;">👑 欲轉入社團社長審核：</span>
+                    {% if apply.new_chief_approved == True %}
+                        <span style="color: #27ae60; font-weight: bold;">✅ 通過</span>
+                    {% else %}
+                        <span style="color: #e67e22; font-weight: bold;">⏳ 審核中</span>
+                    {% endif %}
+                </div>
+
+                <div style="padding: 12px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 15px;">👩‍🏫 欲轉入社團指導老師審核：</span>
+                    {% if apply.new_teacher_approved == True %}
+                        <span style="color: #27ae60; font-weight: bold;">✅ 通過</span>
+                    {% elif apply.new_chief_approved == True %}
+                        <span style="color: #e67e22; font-weight: bold;">⏳ 審核中</span>
+                    {% else %}
+                        <span style="color: #95a5a6;">🔒 等待新社社長先審核</span>
+                    {% endif %}
+                </div>
+
+                <div style="padding: 12px 0; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 15px; font-weight: bold; color: #2c3e50;">👑 訓育組長最終核定：</span>
+                    {% if apply.leader_approved == True %}
+                        <span style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; font-weight: bold;">🎉 全案通過 (已結案)</span>
+                    {% elif apply.new_teacher_approved == True %}
+                        <span style="color: #e67e22; font-weight: bold;">⏳ 終審核定中</span>
+                    {% else %}
+                        <span style="color: #95a5a6;">🔒 等待新社老師審核</span>
+                    {% endif %}
+                </div>
+
+            {% endif %}
+
+        {% endif %}
+
+        <br><br>
+        <a href="/" style="display: block; text-align: center; background-color: #34495e; color: white; padding: 10px; text-decoration: none; border-radius: 6px; font-weight: bold;">🔙 返回首頁</a>
+    </div>
+
+</body>
+</html>

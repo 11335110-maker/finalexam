@@ -58,7 +58,37 @@ class Apply(models.Model):
     out_reason = models.TextField('轉出原因', null=True, blank=True)
     in_reason = models.TextField('轉入原因', null=True, blank=True)
     status = models.IntegerField('申請狀態', choices=STATUS_CHOICES, default=0)
+
+    # 🏢 第一階段：原社團（轉出）審核
+    chief_approved = models.BooleanField(null=True, blank=True, verbose_name="原社社長審核")
+    teacher_approved = models.BooleanField(null=True, blank=True, verbose_name="原社老師審核")
+
+    # 🏫 第二階段：新社團（轉入）審核
+    new_chief_approved = models.BooleanField(null=True, blank=True, verbose_name="新社社長審核")
+    new_teacher_approved = models.BooleanField(null=True, blank=True, verbose_name="新社老師審核")
+
+    # 👑 第三階段：學校終審
+    leader_approved = models.BooleanField(null=True, blank=True, verbose_name="訓育組長最終核定")
 def __str__(self):
         if self.applicant:
             return f"[{self.student_id}] {self.applicant.last_name}{self.applicant.first_name} 的轉社申請"
         return f"[{self.student_id}] 訪客 的轉社申請"
+
+class ClubProfile(models.Model):
+    ROLE_CHOICES = [
+        ('社長', '社長'),
+        ('老師', '老師'),
+        ('組長', '組長'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="對應帳號(User)")
+    club = models.ForeignKey(Club, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="所屬社團")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, verbose_name="職位/身分")
+
+    class Meta:
+        verbose_name = "身分識別"
+        verbose_name_plural = "權限分配"
+
+    def __str__(self):
+        club_name = self.club.clubname if self.club else "學校"  # 💡 這裡對齊妳原本的欄位名稱 clubname
+        return f"【{club_name}】{self.role} - {self.user.username}"

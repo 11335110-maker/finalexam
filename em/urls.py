@@ -17,4 +17,6 @@ urlpatterns = [
     #老師快捷一鍵改狀態的通道
     path('apply/<int:pk>/review/<int:temp_status>/', views.review_apply, name='review_apply'),
     path('apply/leader/', views.leader, name='leader'),
+    # 學生查看單一申請單詳進度的路徑
+    path('apply/<int:pk>/detail/', views.apply_detail, name='apply_detail'),
 ]

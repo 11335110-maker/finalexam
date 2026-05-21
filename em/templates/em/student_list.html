@@ -5,8 +5,7 @@
 </head>
 <body style="font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa;">
 
-    <h2 style="color: #2c3e50;">👩‍🏫 大直高中轉社申請審核後台 (教職員/社長視角)</h2>
-    <p style="color: #7f8c8d;">請在此審核學生的轉社申請。按下進入審核後可以修改學生狀態。</p>
+    <h2 style="color: #2c3e50;">👩‍🏫 大直高中轉社申請紀錄</h2>
 
     <table border="1" cellpadding="12" style="border-collapse: collapse; width: 100%; text-align: center; background-color: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <thead>
@@ -15,28 +14,29 @@
                 <th>學號</th>
                 <th>目前社團</th>
                 <th>轉社原因</th>
-                <th>審核動作</th>
+                <th>審核狀態</th>
             </tr>
         </thead>
-        <tbody>
-            {% for apply in object_list %}
-            <tr style="border-bottom: 1px solid #eee;">
-                <td style="font-weight: bold; color: #34495e;">{{ apply.applicant.username }}</td>
-                <td><code style="background: #f1f2f6; padding: 3px 6px; border-radius: 4px;">{{ apply.student_id }}</code></td>
-                <td><span style="background: #e1f5fe; color: #0288d1; padding: 4px 8px; border-radius: 4px;">{{ apply.from_club }}</span></td>
-                <td style="color: #555; max-width: 300px; text-align: left;">{{ apply.out_reason }}</td>
-                <td>
-                    <a href="{% url 'apply_edit' apply.pk %}" style="background-color: #2ecc71; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 2px 4px rgba(46,204,113,0.3);">
-                        ⚙️ 進入審核
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="padding: 30px; color: #95a5a6; font-size: 16px;">🎉 目前乾乾淨淨！沒有任何待處理的轉社申請。</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+       <tbody>
+    {% for apply in object_list %}
+    <tr style="border-bottom: 1px solid #eee;">
+        <td style="font-weight: bold; color: #34495e;">{{ apply.applicant.username }}</td>
+        <td><code style="background: #f1f2f6; padding: 3px 6px; border-radius: 4px;">{{ apply.student_id }}</code></td>
+        <td><span style="background: #e1f5fe; color: #0288d1; padding: 4px 8px; border-radius: 4px;">{{ apply.from_club }}</span></td>
+        <td style="color: #555; max-width: 300px; text-align: left;">{{ apply.out_reason }}</td>
+        
+        <td>
+            <a href="{% url 'apply_detail' apply.pk %}" style="background-color: #3498db; color: white; padding: 8px 14px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+                🔍 查看詳細進度
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5" style="padding: 30px; color: #95a5a6; font-size: 16px;">🎉 目前乾乾淨淨！沒有任何轉社申請。</td>
+    </tr>
+    {% endfor %}
+</tbody>
     </table>
 
     <br>
@@ -63,4 +63,18 @@
         
     {% endif %}
 </td>
+<div style="margin-bottom: 20px;">
+    {% if can_apply %}
+        <a href="{% url 'apply_create' %}" style="display: inline-block; padding: 12px 24px; background-color: #3498db; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            📝 填寫轉社申請表
+        </a>
+    {% else %}
+        <button disabled style="padding: 12px 24px; background-color: #bdc3c7; color: #7f8c8d; border: none; border-radius: 6px; font-weight: bold; cursor: not-allowed;">
+            ❌ 您目前已有申請單在審核中
+        </button>
+        <span style="color: #e74c3c; font-size: 14px; margin-left: 10px; font-weight: bold;">
+            (必須等目前申請結案或被駁回後，才能再次填表喔！)
+        </span>
+    {% endif %}
+</div>
 </html>

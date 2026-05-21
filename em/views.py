@@ -5,11 +5,8 @@ from .models import Club, Apply
 from django.contrib.auth.mixins import LoginRequiredMixin # 類別視圖專用的強迫登入警衛
 from django.urls import reverse_lazy                     # 自動找網址別名的雷達
 from django.http import HttpResponse                     # 用來噴出警告文字的工具
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required,login_required
 
-# =================================================================
-# 👑 訓育組長登記的「特定審核帳號模擬庫」
-# =================================================================
 FAKE_TEACHER_DB = {
     '原社長': 'club_leader_out@dcsh.tp.edu.tw',
     '原老師': 'club_teacher_out@dcsh.tp.edu.tw',
@@ -17,7 +14,59 @@ FAKE_TEACHER_DB = {
     '新老師': 'club_teacher_in@dcsh.tp.edu.tw',
     '訓育組長': 'leader@dcsh.tp.edu.tw'
 }
+@login_required
+def review_apply(request, pk, choice):
+    """
+    老師與社長的統一審核大腦
+    pk: 申請單的 ID
+    choice: 傳入 'approve' (同意) 或 'reject' (拒絕)
+    """
+    apply = get_object_or_404(Apply, pk=pk)
+    user = request.user@login_required
+def review_apply(request, pk, status): # 這裡的 status 就是 HTML 傳過來的 1, 2, 3, 4...
+    apply = get_object_or_404(Apply, pk=pk)
+    
+    # --- 🟢 妳原本舊有的狀態修改邏輯保留（假設妳原本是用 apply.status = status） ---
+    # apply.status = status  # 這行是妳原本的，請看妳原本怎麼寫就怎麼留著
+    
+    # --- 🎯 這裡就是漏掉的「布林值完全連動開關」！ ---
+    # 根據 HTML 傳過來的數字，順便把這五個蓋章格子填上 True 或 False
+    
+    # 1. 原社社長關卡
+    if status == 1:
+        apply.chief_approved = True   # 👍 同意
+    elif status == 2:
+        apply.chief_approved = False  # ❌ 拒絕
+        
+    # 2. 原社老師關卡
+    elif status == 3:
+        apply.teacher_approved = True
+    elif status == 4:
+        apply.teacher_approved = False
+        
+    # 3. 新社社長關卡
+    elif status == 5:
+        apply.new_chief_approved = True
+    elif status == 6:
+        apply.new_chief_approved = False
+        
+    # 4. 新社老師關卡
+    elif status == 7:
+        apply.new_teacher_approved = True
+    elif status == 8:
+        apply.new_teacher_approved = False
+        
+    # 5. 訓育組長關卡
+    elif status == 9:
+        apply.leader_approved = True
+    elif status == 10:
+        apply.leader_approved = False
 
+    # 🛠️ 萬事俱備，存檔寫入資料庫！
+    apply.save()
+    
+    # 讓它跳回老師列表頁
+    return redirect('teacher_list')
 class ClubList(PermissionRequiredMixin, ListView):
     permission_required = 'em.view_club' # 登入才有使用權限
     model = Club
@@ -30,7 +79,16 @@ class StudentApplyList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Apply.objects.filter(applicant=self.request.user)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # 檢查是否有正在跑的單子（排除 11 和 12）
+        has_active = Apply.objects.filter(
+            applicant=self.request.user
+        ).exclude(status__in=[11, 12]).exists()
+        
+        # 如果「沒有」進行中的單子，就代表「可以申請」
+        context['can_apply'] = not has_active
+        return context
 # 👨‍🏫 老師頁面：【已加入精準權限過濾邏輯】
 class TeacherApplyList(PermissionRequiredMixin, ListView):
     permission_required = 'em.view_apply'       
@@ -138,3 +196,13 @@ def leader(request):
 # 🏠 系統首頁
 def home_page(request):
     return render(request, 'em/home.html')
+from django.shortcuts import get_object_or_404
+
+def apply_detail(request, pk):
+    # 精準撈出這張申請單，撈不到就噴404
+    apply = get_object_or_404(Apply, pk=pk)
+    
+    return render(request, 'em/apply_detail.html', {
+        'apply': apply,
+        'fake_db': FAKE_TEACHER_DB  # 備用，如果妳有需要的話
+    })
