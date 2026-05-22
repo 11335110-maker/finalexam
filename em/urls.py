@@ -4,6 +4,8 @@ from . import views  # 注意這裡是用 . 引入同資料夾的 views
 urlpatterns = [
     # 首頁
     path('', views.home_page, name='home'),
+    # 確保這一行的 name 叫做 'login'，這樣 settings.py 才會找得到
+    path('accounts/login/', views.LoginView.as_view(template_name='em/login.html'), name='login'),
     # 社團列表頁
     path('club/', views.ClubList.as_view(), name='club_list'), 
     path('apply/create/', views.ApplyCreate.as_view(), name='apply_create'),

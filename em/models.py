@@ -86,8 +86,8 @@ class ClubProfile(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, verbose_name="職位/身分")
 
     class Meta:
-        verbose_name = "身分識別"
-        verbose_name_plural = "權限分配"
+        verbose_name = "role"
+        verbose_name_plural = "Clubprofile"
 
     def __str__(self):
         club_name = self.club.clubname if self.club else "學校"  # 💡 這裡對齊妳原本的欄位名稱 clubname

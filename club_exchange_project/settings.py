@@ -116,3 +116,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# 🔑 告訴 Django，如果沒登入的人點了按鈕，一律強制送來這個登入畫面
+# 🔑 就是這行！直接把 Django 內建的 accounts/login 蓋掉，強迫它去走 /login/
+LOGIN_URL = '/login/'  # 這裡要對齊妳在 urls.py 裡面幫登入頁面取的名字（name='login'）
+
+# 🔑 告訴 Django，當使用者在 login 頁面輸入完帳密、成功登入後，要自動跳轉去哪裡
+LOGIN_REDIRECT_URL = 'home'  # 通常是送回首頁（name='home'）
